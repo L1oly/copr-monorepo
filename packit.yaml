@@ -1,0 +1,16 @@
+packages:
+
+  waywallen:
+    downstream_package_name: waywallen
+    upstream_package_name: waywallen
+    paths: 
+      - ./waywallen/waywallen
+    specfile_path: waywallen.spec
+    files_to_sync: 
+      - waywallen.spec
+    upstream_project_url:https://github.com/waywallen/waywallen
+jobs:
+  - job: pull_from_upstream
+    trigger: release
+    dist_git_branches:
+      - fedora-all
