@@ -1,0 +1,105 @@
+name: Update
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: update
+  cancel-in-progress: false
+
+jobs:
+  autoupdate:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/terrapkg/builder:frawhide
+      options: --cap-add=SYS_ADMIN --privileged
+    outputs:
+      packages: ${{ steps.save.outputs.packages }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          ssh-key: ${{ secrets.SSH_AUTHENTICATION_KEY }}
+
+      - name: Set up git & SSH signing key
+        env:
+          SIGNING_KEY: ${{ secrets.SSH_SIGNING_KEY }}
+        run: |
+          printf '%s\n' "$SIGNING_KEY" > "$RUNNER_TEMP/signing_key"
+          chmod 0600 "$RUNNER_TEMP/signing_key"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Run Update
+        run: anda update
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUST_BACKTRACE: full
+
+      - name: Commit & push changed packages
+        id: save
+        shell: bash
+        env:
+          GIT_USER_NAME: ${{ vars.GIT_USER_NAME }}
+          GIT_USER_EMAIL: ${{ vars.GIT_USER_EMAIL }}
+        run: |
+          set -euo pipefail
+
+          # <copr-project>/<package> for every file anda touched (tracked or new).
+          # Needs at least 3 path parts, and skips dot-dirs like .github.
+          mapfile -t pkgs < <(
+            { git diff --name-only; git ls-files --others --exclude-standard; } \
+              | awk -F/ 'NF >= 3 && $1 !~ /^\./ { print $1 "/" $2 }' \
+              | sort -u
+          )
+
+          if [ "${#pkgs[@]}" -eq 0 ]; then
+            echo "Nothing updated."
+            echo 'packages=[]' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git config user.name "$GIT_USER_NAME"
+          git config user.email "$GIT_USER_EMAIL"
+          git config gpg.format "ssh"
+          git config user.signingkey "$RUNNER_TEMP/signing_key"
+
+          git add -- "${pkgs[@]}"
+          git commit -S -m "bump: ${pkgs[*]}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+
+          json=$(printf '"%s",' "${pkgs[@]}")
+          echo "packages=[${json%,}]" >> "$GITHUB_OUTPUT"
+
+  copr:
+    needs: autoupdate
+    if: needs.autoupdate.outputs.packages != '[]'
+    runs-on: ubuntu-latest
+    permissions: {}
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJSON(needs.autoupdate.outputs.packages) }}
+    steps:
+      - name: Trigger COPR rebuild
+        env:
+          COPR_WEBHOOKS: ${{ secrets.COPR_WEBHOOKS }}
+          TARGET: ${{ matrix.package }}
+        run: |
+          project="${TARGET%%/*}"
+          package="${TARGET#*/}"
+
+          base="$(jq -r --arg p "$project" '.[$p] // empty' <<<"$COPR_WEBHOOKS")"
+          if [ -z "$base" ]; then
+            echo "::warning::No COPR webhook configured for '$project', skipping $TARGET"
+            exit 0
+          fi
+          echo "::add-mask::$base" 
+
+          curl -fsS -X POST --retry 2 "${base%/}/${package}/"
+          echo "Triggered COPR rebuild for $TARGET"
