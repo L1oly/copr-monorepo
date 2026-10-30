@@ -99,7 +99,20 @@ jobs:
             echo "::warning::No COPR webhook configured for '$project', skipping $TARGET"
             exit 0
           fi
-          echo "::add-mask::$base" 
+          echo "::add-mask::$base"
+
+          # strip stray whitespace / CR / newlines from copy-paste
+          base="$(printf '%s' "$base" | tr -d '[:space:]')"
+
+          # safe diagnostics (never print the URL itself)
+          echo "webhook length: ${#base}"
+          case "$base" in
+            https://copr.fedorainfracloud.org/webhooks/custom/*) echo "prefix looks right" ;;
+            *) echo "::error::webhook for '$project' doesn't start with https://copr.fedorainfracloud.org/webhooks/custom/"; exit 1 ;;
+          esac
+          case "$base" in
+            *'<'*|*'>'*) echo "::error::webhook still contains <placeholder> text"; exit 1 ;;
+          esac
 
           curl -fsS -X POST --retry 2 "${base%/}/${package}/"
           echo "Triggered COPR rebuild for $TARGET"
