@@ -15,6 +15,7 @@ BuildRequires:  clang >= 22
 BuildRequires:  ninja-build
 BuildRequires:  llvm-devel
 BuildRequires:  lld
+BuildRequires:  git
 BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(glfw3)
 BuildRequires:  pkgconfig(wayland-egl)
