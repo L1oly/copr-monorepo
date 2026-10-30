@@ -14,6 +14,7 @@ BuildRequires:  libcxx-devel
 BuildRequires:  llvm
 BuildRequires:  ninja-build
 BuildRequires:  pkgconfig(libzstd)
+BuildRequires:  git
 
 %description
 Lito is a module-first build tool for C++.
