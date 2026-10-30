@@ -1,146 +1,103 @@
-%global luato_commit        df0c6f2d1cce2051b4711d36067619eda7933683
-%global ncrequest_commit    40d40224842a080039d2a76710fbedb20ee002ac
-%global wavsen_commit       bd8a72e0f68fabc42f3d123623787398ed28dbe4
-%global qextra_commit       650cb670c15c2f34a9cf0dedd52447df7b56e761
-# Leave empty (%%global qml_material_commit %%{nil}) to use the installed qmlmaterial package
-%global qml_material_commit 98b8acd3e0bd57ca0710f2712e4dfa3fcef13113
-
-%global toolchain clang
-%global _lto_cflags %{nil}
+%global appid org.waywallen.waywallen
 
 Name:           waywallen
-Version:        0.4.4
+Version:        0.5.0
 Release:        1%{?dist}
-Summary:        Wallpaper manager for Linux
 License:        MIT
+Summary:        Wallpaper Manager for Linux
 URL:            https://github.com/waywallen/waywallen
-Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
-Source1:        https://github.com/litocpp/luato/archive/%{luato_commit}/luato-%{luato_commit}.tar.gz
-Source2:        https://github.com/hypengw/ncrequest/archive/%{ncrequest_commit}/ncrequest-%{ncrequest_commit}.tar.gz
-Source3:        https://github.com/hypengw/wavsen/archive/%{wavsen_commit}/wavsen-%{wavsen_commit}.tar.gz
-Source4:        https://github.com/hypengw/QExtra/archive/%{qextra_commit}/QExtra-%{qextra_commit}.tar.gz
+Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz
 
-ExclusiveArch:  x86_64
-
-BuildRequires:  git
-BuildRequires:  cmake
-BuildRequires:  ninja-build
+BuildRequires:  rust
+BuildRequires:  lito >= 0.8.1
 BuildRequires:  cargo
-BuildRequires:  lito >= 0.8.5
 BuildRequires:  clang >= 22
-BuildRequires:  lld
+BuildRequires:  cmake >= 3.28
+BuildRequires:  ninja-build
+BuildRequires:  pkgconfig(vulkan) >= 1.1
 BuildRequires:  llvm
-BuildRequires:  vulkan-headers
-BuildRequires:  vulkan-loader-devel
-BuildRequires:  sqlite-devel
-BuildRequires:  libzstd-devel
-BuildRequires:  qt6-qtbase-devel
-BuildRequires:  qt6-qtdeclarative-devel
-BuildRequires:  qt6-qtgrpc-devel
-BuildRequires:  qt6-qtwebsockets-devel
-BuildRequires:  qt6-qttools-devel
-# ffmpeg / mesa: adjust to whatever the build actually links against
+BuildRequires:  lld
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
-BuildRequires:  pkgconfig(libavutil)
+BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libswscale)
-BuildRequires:  mesa-libEGL-devel
-BuildRequires:  mesa-libgbm-devel
-
-Requires:       vulkan-loader
-Requires:       qt6-qtdeclarative
-Requires:       qt6-qtgrpc
-Requires:       qt6-qtwebsockets
-Requires:       hicolor-icon-theme
-
-%if "%{?qml_material_commit}" != ""
+BuildRequires:  pkgconfig(libva)
+BuildRequires:  pkgconfig(gbm)
+BuildRequires:  pkgconfig(libzstd)
+BuildRequires:  protobuf-compiler
+BuildRequires:  qt6-qtbase-devel
+BuildRequires:  cmake(Qt6WebSockets) >= 6.10
+BuildRequires:  cmake(Qt6Protobuf) >= 6.10
+BuildRequires:  cmake(Qt6LinguistTools) >= 6.10
+BuildRequires:  cmake(Qt6ShaderTools) >= 6.10
+BuildRequires:  qt6-qtbase-private-devel
+BuildRequires:  sqlite-devel
+BuildRequires:  glslang
 BuildRequires:  git-lfs
-BuildRequires:  qt6-qtshadertools-devel
-%else
-BuildRequires:  qmlmaterial-devel
-Requires:       qmlmaterial
-%endif
 
-Suggests:       waywallen-display
-
-
-
-
+Requires:       waywallen-display
+Requires:       waywallen-libs
+Requires:       vulkan-loader >= 1.1
+Requires:       qt6-qtgrpc >= 6.10
 
 %description
-Waywallen is a wallpaper manager for Linux. Install waywallen-display for
-layer-shell based compositors.
+Waywallen is a dynamic wallpaper solution for Linux desktops.
+It started life as a Wallpaper Engine plugin for KDE.
+
+%package devel
+Summary:        Development files for %{name}
+%description devel
+%{summary}.
+
+%package libs
+Summary:        Libs of Wallpaper Manager for Linux (waywallen-libs)
+%description libs
+%{summary}.
+# had problems with pkg_libs_files
 
 %prep
-%setup -q -c -T
-mkdir waywallen luato ncrequest wavsen QExtra
-tar -xf %{SOURCE0} -C waywallen  --strip-components=1
-tar -xf %{SOURCE1} -C luato      --strip-components=1
-tar -xf %{SOURCE2} -C ncrequest  --strip-components=1
-tar -xf %{SOURCE3} -C wavsen     --strip-components=1
-tar -xf %{SOURCE4} -C QExtra     --strip-components=1
+%autosetup
 
-%if "%{?qml_material_commit}" != ""
-git clone https://github.com/hypengw/QmlMaterial.git QmlMaterial
-git -C QmlMaterial checkout %{qml_material_commit}
-git -C QmlMaterial lfs install --local
-git -C QmlMaterial lfs pull
+%conf
+%if 0%{?fedora} >= 45
+export CXXFLAGS="${CXXFLAGS//-Wp,-D_FORTIFY_SOURCE=3/}"
 %endif
-
-cd waywallen
-mkdir -p .lito
-cat > .lito/config.toml << EOF
-[patch."https://github.com/litocpp/luato.git"]
-path = "../luato"
-
-[patch."https://github.com/hypengw/wavsen.git"]
-path = "../wavsen"
-
-[patch."https://github.com/hypengw/ncrequest.git"]
-path = "../ncrequest"
-
-[patch."https://github.com/hypengw/QExtra.git"]
-path = "../QExtra"
-
-EOF
-
-%if "%{?qml_material_commit}" != ""
-cat >> .lito/config.toml << EOF
-[patch."https://github.com/hypengw/QmlMaterial.git"]
-path = "../QmlMaterial"
-EOF
-%else
-cat >> .lito/config.toml << EOF
-[tools.cmake.overrides.qml_material]
-source = "installed"
-EOF
-%endif
-
-cargo fetch --target host-tuple
-lito fetch --all-features
-
-%build
-%set_build_flags
 export LIBSQLITE3_SYS_USE_PKG_CONFIG=1
 export ZSTD_SYS_USE_PKG_CONFIG=1
+export RUSTFLAGS="%{build_rustflags} -C link-arg=-fuse-ld=lld"
 
-CXXFLAGS="${CXXFLAGS//-Wp,-D_FORTIFY_SOURCE=3/}"
-export CXXFLAGS
-
-RUSTFLAGS+=" -C link-arg=-fuse-ld=lld"
-export RUSTFLAGS
-
-lito -C %{name} build --profile plain --use-env-flags
+%build
+lito build --profile release
 
 %install
-lito -C %{name} install --profile plain --prefix %{buildroot}%{_prefix} --no-build
+lito install --prefix %{buildroot}%{_prefix} --profile release
+mkdir -p %{buildroot}%{_libdir}
+mv %{buildroot}%{_prefix}/lib/* %{buildroot}%{_libdir}/
+rmdir %{buildroot}%{_prefix}/lib
+
+%terra_appstream
 
 %files
-%license waywallen/LICENSE
-%{_bindir}/waywallen*
-%{_datadir}/applications/*.desktop
-%{_datadir}/icons/hicolor/*/apps/*
+%license LICENSE
+%doc README.md
+%{_bindir}/waywallen
+%{_bindir}/waywallen-i18n
+%{_bindir}/waywallen-image-renderer
+%{_bindir}/waywallen-ui
+%{_bindir}/waywallen-video-renderer
+%{_datadir}/applications/%{appid}.desktop
+%{_datadir}/icons/hicolor/scalable/apps/%{appid}.svg
+%{_datadir}/metainfo/%{appid}.metainfo.xml
+%dir %{_datadir}/waywallen
+%{_datadir}/waywallen/
+
+%files devel
+%{_includedir}/*
+%{_libdir}/pkgconfig/*.pc
+
+%files libs
+%{_libdir}/libwaywallen-bridge.so
 
 %changelog
-* Fri Oct 16 2026 Your Name <you@example.com> - 0.4.4-1
-- Initial RPM package (converted from Arch PKGBUILD)
+* Thu Oct 29 2026 L1oly <lid2011@ukr.net>
+- Initial commit

@@ -1,5 +1,15 @@
 packages:
 
+  lito:
+    downstream_package_name: lito
+    upstream_package_name: lito
+    paths: 
+      - ./litocpp/lito
+    specfile_path: lito.spec
+    files_to_sync: 
+      - lito.spec
+    upstream_project_url:https://github.com/litocpp/lito
+
   waywallen:
     downstream_package_name: waywallen
     upstream_package_name: waywallen
@@ -9,6 +19,27 @@ packages:
     files_to_sync: 
       - waywallen.spec
     upstream_project_url:https://github.com/waywallen/waywallen
+
+  waywallen-display:
+    downstream_package_name: waywallen-display
+    upstream_package_name: waywallen-display
+    paths: 
+      - ./waywallen/waywallen-display
+    specfile_path: waywallen-display.spec
+    files_to_sync: 
+      - waywallen-display.spec
+    upstream_project_url:https://github.com/waywallen/waywallen-display
+
+    open-wallpaper-engine:
+    downstream_package_name: open-wallpaper-engine
+    upstream_package_name: open-wallpaper-engine
+    paths: 
+      - ./waywallen/open-wallpaper-engine
+    specfile_path: open-wallpaper-engine.spec
+    files_to_sync: 
+      - open-wallpaper-engine.spec
+    upstream_project_url:https://github.com/waywallen/open-wallpaper-engine
+    
 jobs:
   - job: pull_from_upstream
     trigger: release
