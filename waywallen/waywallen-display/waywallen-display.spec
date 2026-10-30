@@ -139,6 +139,7 @@ rm -rf %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}/schemas
 %files devel
 %{_includedir}/*
 %{_libdir}/*.so
+%{_datadir}/gir-1.0/Waywallen-1.0.gir
 
 %files static
 %{_libdir}/*.a
