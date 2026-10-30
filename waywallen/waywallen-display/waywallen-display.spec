@@ -139,7 +139,6 @@ rm -rf %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}/schemas
 %files devel
 %{_includedir}/*
 %{_libdir}/*.so
-%{_libdir}/pkgconfig/*.pc
 
 %files static
 %{_libdir}/*.a
