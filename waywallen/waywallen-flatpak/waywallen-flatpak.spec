@@ -46,14 +46,16 @@ fi
 exec flatpak run org.waywallen.waywallen "$@"
 INNER_EOF
 
-chmod +x %{buildroot}%{_bindir}/waywallen
+chmod 0755 %{buildroot}%{_bindir}/waywallen
+ln -s waywallen %{buildroot}%{_bindir}/waywallen-flatpak
 
 %files
 %{_bindir}/waywallen
+%{_bindir}/waywallen-flatpak
 
 %changelog
 * Wed Oct 07 2026 L1oly <https://github.com/L1oly> - 1.0-1
 - Initial release
 
 * Mon Nov 02 2026 L1oly <https://github.com/L1oly> - 2.0-1
-- Add few helpfull thinks
+- Add few helpful things
