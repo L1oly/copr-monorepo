@@ -1,5 +1,5 @@
 Name:           waywallen-flatpak
-Version:        1.0
+Version:        2.0
 Release:        1%{?dist}
 Summary:        RPM wrapper to help install and run waywallen Flatpak
 License:        MIT
@@ -8,6 +8,7 @@ BuildArch:      noarch
 Conflicts:      waywallen
 Requires:       bash
 Requires:       flatpak
+Requires:       waywallen-display
 
 %define debug_package %{nil}
 
@@ -37,6 +38,11 @@ else
     fi
   fi
 fi
+
+if ! flatpak override --user --show org.waywallen.waywallen 2>/dev/null | grep -q "org.mpris.MediaPlayer2"; then
+  flatpak override --user --talk-name='org.mpris.MediaPlayer2.*' org.waywallen.waywallen
+fi
+
 exec flatpak run org.waywallen.waywallen "$@"
 INNER_EOF
 
@@ -48,3 +54,6 @@ chmod +x %{buildroot}%{_bindir}/waywallen
 %changelog
 * Wed Oct 07 2026 L1oly <https://github.com/L1oly> - 1.0-1
 - Initial release
+
+* Mon Nov 02 2026 L1oly <https://github.com/L1oly> - 2.0-1
+- Add few helpfull thinks
