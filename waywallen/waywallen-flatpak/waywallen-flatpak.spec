@@ -2,7 +2,7 @@ Name:           waywallen-flatpak
 Version:        2.0
 Release:        1%{?dist}
 Summary:        RPM wrapper to help install and run waywallen Flatpak
-License:        MIT
+License:        GPL-3.0-or-later
 BuildArch:      noarch
 
 Conflicts:      waywallen
