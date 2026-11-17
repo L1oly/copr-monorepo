@@ -1,5 +1,5 @@
 Name:           lito
-Version:        0.8.9
+Version:        0.8.8
 Release:        1%{?dist}
 License:        MIT OR Apache-2.0
 Summary:        Module-first C++ builder and package manager
@@ -46,6 +46,8 @@ mv %{buildroot}%{_datadir}/lito/lito.schema.json %{buildroot}%{_datadir}/lito.sc
 %license LICENSE-MIT LICENSE-APACHE
 %license %{_datadir}/licenses/licrypto/LICENSE-MIT
 %license %{_datadir}/licenses/licrypto/LICENSE-APACHE
+%license %{_datadir}/licenses/liresto/LICENSE-MIT
+%license %{_datadir}/licenses/liresto/LICENSE-APACHE
 %doc README.md
 %{_bindir}/lito
 %{_datadir}/lito.schema.json
