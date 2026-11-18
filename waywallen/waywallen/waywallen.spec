@@ -34,6 +34,7 @@ BuildRequires:  qt6-qtbase-private-devel
 BuildRequires:  sqlite-devel
 BuildRequires:  glslang
 BuildRequires:  git-lfs
+BuildRequires:  lua
 
 Requires:       waywallen-display
 Requires:       waywallen-libs
