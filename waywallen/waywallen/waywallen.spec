@@ -34,7 +34,7 @@ BuildRequires:  qt6-qtbase-private-devel
 BuildRequires:  sqlite-devel
 BuildRequires:  glslang
 BuildRequires:  git-lfs
-BuildRequires:  pkgconfig(lua)
+BuildRequires:  pkgconfig(lua) >= 5.5
 
 Requires:       waywallen-display
 Requires:       waywallen-libs
@@ -62,6 +62,9 @@ Summary:        Libs of Wallpaper Manager for Linux (waywallen-libs)
 %conf
 %if 0%{?fedora} >= 45
 export CXXFLAGS="${CXXFLAGS//-Wp,-D_FORTIFY_SOURCE=3/}"
+mkdir -p %{_builddir}/pkgconfig
+ln -sf %{_libdir}/pkgconfig/lua.pc %{_builddir}/pkgconfig/lua5.5.pc
+export PKG_CONFIG_PATH="%{_builddir}/pkgconfig:${PKG_CONFIG_PATH}"
 %endif
 export LIBSQLITE3_SYS_USE_PKG_CONFIG=1
 export ZSTD_SYS_USE_PKG_CONFIG=1
