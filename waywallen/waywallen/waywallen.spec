@@ -64,11 +64,11 @@ ln -sf %{_libdir}/pkgconfig/lua.pc %{_builddir}/pkgconfig/lua5.5.pc
 %conf
 %if 0%{?fedora} >= 45
 export CXXFLAGS="${CXXFLAGS//-Wp,-D_FORTIFY_SOURCE=3/}"
-export PKG_CONFIG_PATH="%{_builddir}/pkgconfig:${PKG_CONFIG_PATH}"
 %endif
 export LIBSQLITE3_SYS_USE_PKG_CONFIG=1
 export ZSTD_SYS_USE_PKG_CONFIG=1
 export RUSTFLAGS="%{build_rustflags} -C link-arg=-fuse-ld=lld"
+export PKG_CONFIG_PATH="%{_builddir}/pkgconfig:${PKG_CONFIG_PATH}"
 
 %build
 lito build --profile release
