@@ -71,6 +71,7 @@ export RUSTFLAGS="%{build_rustflags} -C link-arg=-fuse-ld=lld"
 export PKG_CONFIG_PATH="%{_builddir}/pkgconfig:${PKG_CONFIG_PATH}"
 
 %build
+lito --help
 lito build --profile release
 
 %install
