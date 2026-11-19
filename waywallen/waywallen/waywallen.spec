@@ -69,6 +69,7 @@ export PKG_CONFIG_PATH="%{_builddir}/pkgconfig:${PKG_CONFIG_PATH}"
 lito build --profile release
 
 %install
+export PKG_CONFIG_PATH="%{_builddir}/pkgconfig:${PKG_CONFIG_PATH}"
 lito install --prefix %{buildroot}%{_prefix} --profile release
 mkdir -p %{buildroot}%{_libdir}
 mv %{buildroot}%{_prefix}/lib/* %{buildroot}%{_libdir}/
