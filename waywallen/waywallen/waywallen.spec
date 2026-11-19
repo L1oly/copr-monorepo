@@ -85,6 +85,7 @@ rmdir %{buildroot}%{_prefix}/lib
 %{_bindir}/waywallen-video-renderer
 %{_bindir}/waywallen-gltf-renderer
 %{_bindir}/waywallen-probe
+%{_bindir}/waywallen-web-helper
 %{_datadir}/applications/%{appid}.desktop
 %{_datadir}/icons/hicolor/scalable/apps/%{appid}.svg
 %{_datadir}/metainfo/%{appid}.metainfo.xml
