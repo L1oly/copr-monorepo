@@ -57,11 +57,10 @@ source = "installed"
 EOF
 
 %build
-lito build --profile release --package owe-cli-scene --package owe-cli-web --package owe-waywallen-plugin
+lito install -p owe-waywallen-plugin --prefix %{buildroot}%{_prefix} --profile release
 
 %install
-lito install --prefix %{buildroot}%{_prefix} --profile release --package owe-cli-scene --package owe-cli-web --package owe-waywallen-plugin
-
+lito install -p owe-waywallen-plugin --prefix %{buildroot}%{_prefix} --profile release
 rm -rf %{buildroot}%{_prefix}/lib
 rm -rf %{buildroot}%{_bindir}
 install -Dm 755 build/release/bin/owe-sceneviewer/SceneViewer                             %{buildroot}%{_libdir}/open-wallpaper-engine/SceneViewer
