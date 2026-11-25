@@ -27,6 +27,7 @@ BuildRequires:  pkgconfig(libswscale)
 BuildRequires:  pkgconfig(libva)
 BuildRequires:  pkgconfig(eigen3)
 BuildRequires:  pkgconfig(glslang)
+BuildRequires:  pkgconfig(openal)
 BuildRequires:  cef-devel
 BuildRequires:  quickjs-ng-devel
 BuildRequires:  waywallen-devel
