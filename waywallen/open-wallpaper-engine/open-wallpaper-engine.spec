@@ -65,15 +65,11 @@ lito install -p owe-waywallen-plugin --prefix %{buildroot}%{_prefix} --profile r
 %install
 ls -Ra %{buildroot}
 lito install -p owe-waywallen-plugin --prefix %{buildroot}%{_prefix} --profile release
-ls -Ra
-ls -Ra %{buildroot}
-ls -laR build/release/bin
 
 %files
 %license LICENSE
 %doc README.md
 %{_bindir}/*
-%{_libdir}/*
 %{_datadir}/waywallen/plugins/org.waywallen.open-wallpaper-engine
 
 %changelog
