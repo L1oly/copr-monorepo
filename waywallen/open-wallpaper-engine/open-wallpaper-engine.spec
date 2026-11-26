@@ -63,12 +63,7 @@ lito install -p owe-waywallen-plugin --prefix %{buildroot}%{_prefix} --profile r
 
 %install
 lito install -p owe-waywallen-plugin --prefix %{buildroot}%{_prefix} --profile release
-rm -rf %{buildroot}%{_prefix}/lib
-rm -rf %{buildroot}%{_bindir}
-install -Dm 755 build/release/bin/owe-sceneviewer/SceneViewer                             %{buildroot}%{_libdir}/open-wallpaper-engine/SceneViewer
-install -Dm 755 build/release/bin/owe-webviewer/WebViewer                                 %{buildroot}%{_libdir}/open-wallpaper-engine/WebViewer
-install -Dm 755 build/release/bin/owe-waywallen-scene-renderer/waywallen-wescene-renderer %{buildroot}%{_bindir}/waywallen-wescene-renderer
-install -Dm 755 build/release/bin/owe-waywallen-web-renderer/waywallen-weweb-renderer     %{buildroot}%{_bindir}/waywallen-weweb-renderer
+la -Ra
 
 %files
 %license LICENSE
