@@ -59,11 +59,14 @@ source = "installed"
 EOF
 
 %build
+OWE_WAYWALLEN_PLUGIN_BUNDLE_LAYOUT=ON
 lito install -p owe-waywallen-plugin --prefix %{buildroot}%{_prefix} --profile release
 
 %install
+ls -Ra %{buildroot}
 lito install -p owe-waywallen-plugin --prefix %{buildroot}%{_prefix} --profile release
 ls -Ra
+ls -Ra %{buildroot}
 
 %files
 %license LICENSE
