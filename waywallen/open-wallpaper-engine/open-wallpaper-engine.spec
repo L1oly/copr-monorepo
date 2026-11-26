@@ -67,6 +67,7 @@ ls -Ra %{buildroot}
 lito install -p owe-waywallen-plugin --prefix %{buildroot}%{_prefix} --profile release
 ls -Ra
 ls -Ra %{buildroot}
+la -laR build/release/bin
 
 %files
 %license LICENSE
