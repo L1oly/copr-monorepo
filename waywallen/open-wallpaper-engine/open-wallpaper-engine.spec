@@ -69,13 +69,14 @@ lito install -p owe-waywallen-plugin --prefix %{buildroot}%{_prefix} --profile r
 
 %install
 lito install -p owe-waywallen-plugin --prefix %{buildroot}%{_prefix} --profile release
-mv %{buildroot}%{_bindir}/weweb/owe-web %{buildroot}%{_bindir}/owe-web
+ln -sf ./weweb/owe-web %{buildroot}%{_bindir}/owe-web
 
 %files
 %license LICENSE
 %doc README.md
 %{_bindir}/owe-web
 %{_bindir}/owe-scene
+%{_bindir}/weweb/owe-web
 
 %files -n waywallen-plugin-%{name}
 %{_datadir}/waywallen/plugins/org.waywallen.open-wallpaper-engine
