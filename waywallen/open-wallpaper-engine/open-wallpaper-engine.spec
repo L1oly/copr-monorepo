@@ -35,6 +35,8 @@ BuildRequires:  waywallen-devel
 BuildRequires:  waywallen-libs
 BuildRequires:  glslang
 
+Requires:       cef
+
 %description
 %{summary}.
 
@@ -43,7 +45,7 @@ Summary:         %{summary} (waywallen plugin)
 Requires:        %{name}%{?_isa} = %{version}-%{release}
 Requires:        waywallen
 Supplements:     (%{name} and waywallen)
-%description -n  waywallen-plugin-%{name}
+%description -n  waywallen-%{name}
 %{description}
 
 %prep
