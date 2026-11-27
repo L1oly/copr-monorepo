@@ -36,7 +36,6 @@ BuildRequires:  waywallen-libs
 BuildRequires:  glslang
 
 Requires:       waywallen
-Requires:       cef
 
 %description
 %{summary}.
@@ -63,13 +62,14 @@ OWE_WAYWALLEN_PLUGIN_BUNDLE_LAYOUT=ON
 lito install -p owe-waywallen-plugin --prefix %{buildroot}%{_prefix} --profile release
 
 %install
-ls -Ra %{buildroot}
 lito install -p owe-waywallen-plugin --prefix %{buildroot}%{_prefix} --profile release
+mv %{buildroot}%{_bindir}/weweb/owe-web %{buildroot}%{_bindir}/owe-web
 
 %files
 %license LICENSE
 %doc README.md
-%{_bindir}/*
+%{_bindir}/owe-web
+%{_bindir}/owe-scene
 %{_datadir}/waywallen/plugins/org.waywallen.open-wallpaper-engine
 
 %changelog
